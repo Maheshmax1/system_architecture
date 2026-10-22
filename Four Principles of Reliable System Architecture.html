@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Four Principles of Reliable System Architecture</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@500;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/lucide@0.469.0/dist/umd/lucide.min.js"></script>
+<style>
+:root{--creme:#EFE3D6;--sand:#D9BDA4;--pink:#C99D9A;--bur:#590D19;--warm:#FAF7F2;--char:#25252A;--dark:#302522;--muted:#756761;--line:#E4D7CC;color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+*,*::before,*::after{box-sizing:inherit}
+html{scroll-behavior:smooth;scroll-padding-top:calc(72px + env(safe-area-inset-top,0px))}
+body{margin:0;background:var(--warm);color:var(--dark);font:400 17px/1.6 Inter,system-ui,sans-serif}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);background:var(--char);z-index:60}
+h1,h2,h3{font-family:"DM Sans",Inter,sans-serif;color:var(--bur);line-height:1.15;margin:0}
+p{margin:0 0 .8em;max-width:62ch}
+a{color:inherit}
+:focus-visible{outline:3px solid var(--pink);outline-offset:2px}
+.wrap{max-width:1120px;margin:0 auto;padding:0 24px}
+header.nav{position:sticky;top:env(safe-area-inset-top,0px);z-index:40;background:var(--char);color:var(--creme)}
+.nav .wrap{display:flex;align-items:center;gap:24px;height:64px}
+.brand{font:700 15px "DM Sans",sans-serif;letter-spacing:.14em;text-decoration:none;margin-right:auto}
+.nav nav{display:flex;gap:24px}
+.nav nav a{text-decoration:none;font-size:15px;opacity:.85}.nav nav a:hover{opacity:1;text-decoration:underline}
+.btn{display:inline-flex;align-items:center;gap:8px;font:600 15px Inter,sans-serif;background:var(--bur);color:#fff;border:1px solid var(--bur);border-radius:10px;padding:11px 20px;cursor:pointer;text-decoration:none;transition:background .2s}
+.btn:hover{background:#74172a}
+.btn.ghost{background:transparent;color:var(--bur)}.btn.ghost:hover{background:var(--creme)}
+.nav .btn{border-color:var(--pink);padding:8px 16px}
+section{padding:84px 0}
+.hero{background:var(--creme);padding:72px 0 56px}
+.hero h1{font-size:clamp(34px,5.4vw,64px);max-width:16ch;letter-spacing:-.02em}
+.sub{font:500 clamp(18px,2vw,22px)/1.45 "DM Sans",sans-serif;color:var(--dark);margin:20px 0 8px;max-width:48ch}
+.muted{color:var(--muted)}
+.row{display:flex;flex-wrap:wrap;gap:12px;margin-top:24px}
+.fig{margin:0;background:#fff;border:1px solid var(--line);border-radius:16px;padding:16px;box-shadow:0 8px 28px rgba(89,13,25,.07);min-height:120px}
+.fig:not(.ready){background:linear-gradient(90deg,#fff,var(--creme),#fff) 0 0/200% 100%;animation:sh 1.2s infinite}
+.fig:empty::after{content:"Diagram unavailable. Reload the page to try again.";color:var(--muted)}
+@keyframes sh{to{background-position:-200% 0}}
+.fig svg{display:block;width:100%;height:auto}
+figcaption{font-size:14px;color:var(--muted);margin-top:10px;text-align:center}
+.hero .fig{margin-top:40px;animation:rise .8s both}
+@keyframes rise{from{opacity:0;transform:translateY(14px)}}
+h2.big{font-size:clamp(28px,3.6vw,42px);margin-bottom:12px}
+.flow{display:flex;align-items:stretch;gap:8px;margin:36px 0;list-style:none;padding:0}
+.flow li{flex:1;background:var(--creme);border:1px solid var(--line);border-radius:14px;padding:18px 14px;text-align:center;font-size:15px;position:relative}
+.flow li svg{color:var(--bur);width:30px;height:30px;display:block;margin:0 auto 8px}
+.flow li+li::before{content:"›";position:absolute;left:-14px;top:50%;transform:translateY(-50%);color:var(--bur);font-size:26px;font-weight:700;z-index:2}
+.flow b{display:block;font-family:"DM Sans";color:var(--bur);font-size:13px}
+.probs{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.prob{border-left:4px solid var(--bur);background:#fff;border-radius:0 12px 12px 0;padding:14px 18px;box-shadow:0 4px 16px rgba(89,13,25,.06)}
+.prob svg{color:var(--bur);width:22px;height:22px;vertical-align:-5px;margin-right:6px}
+.pr{padding:72px 0;border-top:1px solid var(--line)}
+.pr:nth-of-type(even){background:var(--creme)}
+.ph{display:flex;gap:20px;align-items:baseline;flex-wrap:wrap;margin-bottom:24px}
+.num{font:700 clamp(44px,6vw,72px)/1 "DM Sans";color:var(--pink)}
+.ph h2{font-size:clamp(26px,3.4vw,40px)}
+.ph .sub{margin:4px 0 0}
+.cols{display:grid;grid-template-columns:1.2fr 1fr 1fr;gap:32px;margin:32px 0 24px}
+.cols h3{font-size:18px;margin-bottom:10px}
+.cols ol,.cols ul{margin:0;padding-left:20px}.cols li{margin-bottom:8px}
+dl{margin:0}dt{font:700 15px "DM Sans";color:var(--bur)}dd{margin:0 0 10px;font-size:15px;color:var(--dark)}
+.take{background:var(--bur);color:var(--creme);border-radius:14px;padding:20px 26px;font:500 clamp(18px,2vw,22px)/1.4 "DM Sans";display:flex;justify-content:space-between;align-items:center;gap:20px;flex-wrap:wrap}
+.take .btn{background:var(--creme);color:var(--bur);border-color:var(--creme)}
+.sum{display:grid;grid-template-columns:repeat(2,1fr);gap:16px;margin:28px 0}
+.sum div{background:#fff;border:1px solid var(--line);border-radius:14px;padding:16px 20px}
+.sum b{font-family:"DM Sans";color:var(--bur)}
+.close{font:500 clamp(20px,2.4vw,26px)/1.4 "DM Sans";max-width:44ch;margin:32px 0 16px}
+.thanks{font:700 clamp(22px,3vw,32px)/1.3 "DM Sans";color:var(--bur);margin-top:28px}
+footer{background:var(--char);color:var(--creme);text-align:center;padding:24px;font-size:14px}
+/* diagrams */
+.bx rect{fill:var(--sand);stroke:var(--bur);stroke-width:1.5}
+.bx text{fill:var(--dark);font:600 14px Inter,sans-serif;text-anchor:middle}
+.bx text.sm{font:400 12px Inter,sans-serif;fill:#4a3d38}
+.bx.b rect{fill:var(--bur);stroke:none}.bx.b text{fill:#fff}.bx.b text.sm{fill:var(--creme)}
+.bx.c rect{fill:var(--creme)}.bx.p rect{fill:var(--pink)}.bx.p text.sm{fill:var(--dark)}
+.ar{stroke:var(--bur);stroke-width:2.5;fill:none}.ar.p{stroke:var(--pink);stroke-width:3}.ar.d{stroke-dasharray:7 5}
+.t{font:500 13px Inter,sans-serif;fill:var(--muted);text-anchor:middle}.t.b{fill:var(--bur);font-weight:600}
+.tile{fill:var(--warm);stroke:var(--line)}.dash{fill:none;stroke:var(--bur);stroke-dasharray:6 4}
+/* presentation */
+#pm{position:fixed;inset:0;z-index:100;background:var(--warm);display:flex;flex-direction:column;padding-top:env(safe-area-inset-top,0px)}
+#pm[hidden]{display:none}
+#stage{flex:1;min-height:0;padding:clamp(14px,2.5vw,36px) clamp(16px,5vw,72px) 8px;overflow:auto}
+.sl{display:flex;flex-direction:column;gap:12px;height:100%;min-height:420px}
+.sl h2{font-size:clamp(24px,3.6vw,44px)}.sl h1{font-size:clamp(28px,4.4vw,52px)}
+.sl .sub{margin:0;font-size:clamp(15px,1.7vw,20px)}
+.sl .fig{flex:1;min-height:180px;padding:10px;display:flex;flex-direction:column}
+.sl .fig svg{flex:1;min-height:0;height:100%}
+.sl .tk{background:var(--bur);color:var(--creme);border-radius:12px;padding:12px 20px;font:500 clamp(15px,1.8vw,22px)/1.35 "DM Sans";margin:0;max-width:none}
+.chips{display:flex;flex-wrap:wrap;gap:8px;list-style:none;margin:0;padding:0}
+.chips li{background:var(--creme);border:1px solid var(--sand);border-radius:99px;padding:3px 14px;font-size:14px;color:var(--bur);font-weight:500}
+.ctl{display:flex;align-items:center;gap:14px;padding:12px clamp(16px,5vw,72px) calc(12px + env(safe-area-inset-bottom,0px));background:var(--char);color:var(--creme)}
+.ctl .btn{padding:8px 16px;border-color:var(--pink)}
+.prog{flex:1;height:6px;background:#4a4a50;border-radius:9px;overflow:hidden}.prog i{display:block;height:100%;background:var(--pink);transition:width .3s}
+@media(max-width:860px){.cols,.probs,.sum{grid-template-columns:1fr}.flow{flex-direction:column}.flow li+li::before{content:"⌄";left:50%;top:-18px;transform:translateX(-50%)}.nav nav{display:none}section{padding:56px 0}.sl{min-height:0}}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important;scroll-behavior:auto!important}}
+</style>
+</head>
+<body>
+<header class="nav"><div class="wrap">
+<a class="brand" href="#overview">SYSTEM ARCHITECTURE</a>
+<nav aria-label="Main"><a href="#overview">Overview</a><a href="#principles">Principles</a><a href="#architecture">Architecture</a><a href="#conclusion">Conclusion</a></nav>
+<button class="btn" data-s="0">Presentation Mode</button>
+</div></header>
+
+<main>
+<section class="hero" id="overview"><div class="wrap">
+<h1>Four Principles of Reliable System Architecture</h1>
+<p class="sub">Designing systems that handle failures, scale efficiently, respond faster, and prevent duplicate operations.</p>
+<p class="muted">Learn how reliable system design works through practical examples from a food delivery application.</p>
+<div class="row"><a class="btn" href="#principles">Explore the Principles</a><button class="btn ghost" data-s="0">Start Presentation</button></div>
+<figure class="fig" id="hero-fig"></figure>
+</div></section>
+
+<section id="architecture"><div class="wrap">
+<h2 class="big">What happens when a customer places an order?</h2>
+<p class="muted">Five steps run in a few seconds. Each one can go wrong.</p>
+<ol class="flow">
+<li><i data-lucide="shopping-cart"></i><b>Step 1</b>Customer places an order</li>
+<li><i data-lucide="shield-check"></i><b>Step 2</b>The application validates the order</li>
+<li><i data-lucide="credit-card"></i><b>Step 3</b>The payment service processes the payment</li>
+<li><i data-lucide="database"></i><b>Step 4</b>The order is stored in the database</li>
+<li><i data-lucide="bell-ring"></i><b>Step 5</b>The delivery partner receives the notification</li>
+</ol>
+<div class="probs">
+<div class="prob"><i data-lucide="cloud-off"></i><b>Payment service becomes unavailable.</b></div>
+<div class="prob"><i data-lucide="timer"></i><b>Checkout becomes slow because of extra tasks.</b></div>
+<div class="prob"><i data-lucide="copy"></i><b>The customer retries a request and creates a risk of duplicate orders.</b></div>
+</div>
+</div></section>
+
+<div id="principles"></div>
+
+<section id="conclusion" style="background:var(--creme)"><div class="wrap">
+<h2 class="big">Building Systems That Can Be Trusted</h2>
+<div class="sum">
+<div><b>Design for Failure</b><br>Handle failures safely.</div>
+<div><b>Stateful vs. Stateless Architecture</b><br>Manage application state carefully and support scaling.</div>
+<div><b>Decoupling Hot Paths from Heavy Writes</b><br>Move suitable secondary tasks to background processing.</div>
+<div><b>Idempotency</b><br>Prevent duplicate effects during retries.</div>
+</div>
+<figure class="fig" id="sum-fig"></figure>
+<p class="close">We cannot prevent every failure, but we can design our systems to handle failures safely without unnecessarily affecting customers or important business operations.</p>
+<div class="row"><button class="btn" data-s="5">Present This Topic</button></div>
+<p class="thanks">Thank you for listening.<br>I'm happy to answer your questions.</p>
+</div></section>
+</main>
+<footer>Reliable System Architecture | Food Delivery Case Study</footer>
+
+<div id="pm" hidden role="dialog" aria-modal="true" aria-label="Presentation mode">
+<div id="stage"></div>
+<div class="ctl"><button class="btn" id="pv" aria-label="Previous slide">Previous</button><div class="prog"><i id="pb"></i></div><span id="pc" aria-live="polite"></span><button class="btn" id="nx" aria-label="Next slide">Next</button><button class="btn" id="ex">Exit</button></div>
+</div>
+
+<script>
+const E=(x,y,w,h,t,c='')=>{const L=t.split('|');return `<g class="bx ${c}"><rect x="${x}" y="${y}" width="${w}" height="${h}" rx="10"/>${L.map((l,i)=>`<text x="${x+w/2}" y="${y+h/2+(i-(L.length-1)/2)*17+5}" class="${i?'sm':''}">${l}</text>`).join('')}</g>`};
+const A=(a,b,c,d,k='')=>`<line x1="${a}" y1="${b}" x2="${c}" y2="${d}" class="ar ${k}" marker-end="url(#${k.includes('p')?'mp':'mb'})"/>`;
+const T=(x,y,t,k='')=>`<text x="${x}" y="${y}" class="t ${k}">${t}</text>`;
+const S=(b,h,alt)=>`<svg viewBox="0 0 900 ${h}" role="img" aria-label="${alt}"><defs><marker id="mb" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#590D19"/></marker><marker id="mp" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#C99D9A"/></marker></defs>${b}</svg>`;
+
+const hero=S(E(20,170,130,60,'Customer|places order','c')+A(150,200,230,200)+E(230,170,170,60,'Application|server','b')+A(400,185,470,95)+A(400,200,470,200)+A(400,215,470,305)+E(470,65,170,60,'Payment|service')+E(470,170,170,60,'Database|orders stored')+E(470,275,170,60,'Restaurant|accepts order')+A(640,305,710,305)+E(710,275,170,60,'Delivery|partner','p'),370,'Food delivery architecture: a customer talks to an application server, which uses a payment service, a database and a restaurant; the restaurant hands off to a delivery partner.');
+
+const d1=S(E(20,40,150,60,'Customer|places order','c')+A(170,70,260,70)+E(260,40,170,60,'Order Service','b')+A(430,70,560,70,'d')+T(495,58,'slow','b')+E(560,40,200,60,'Payment Gateway|responding slowly','p')+A(300,100,150,190)+A(345,100,450,190)+A(660,100,750,190,'p')+E(20,190,260,70,'Timeout|stop waiting after a set limit','c')+E(320,190,260,70,'Circuit breaker|pause calls after repeated failures','c')+E(620,190,260,70,'Reconciliation|check the real status later','c')+A(750,260,750,320)+E(20,320,860,56,'Payment status: UNCERTAIN, not failed, until reconciliation confirms','b'),390,'Customer calls the order service, which calls a slow payment gateway. Timeout, circuit breaker and reconciliation each handle the problem. Payment status stays uncertain until confirmed.');
+
+const d2=S(`<line x1="450" y1="10" x2="450" y2="390" stroke="#E4D7CC" stroke-width="2"/>`+T(225,24,'Stateless: servers share storage','b')+E(170,40,110,36,'Customer','c')+A(225,76,225,100)+E(160,100,130,36,'Load balancer','b')+E(30,180,120,46,'Server A','p')+E(165,180,120,46,'Server B','p')+E(300,180,120,46,'Server C','p')+A(225,136,90,180)+A(225,136,225,180)+A(225,136,360,180)+A(90,226,180,300)+A(225,226,225,300)+A(360,226,270,300)+E(120,300,210,60,'Shared storage|customer, cart, order')+T(225,385,'Any server can handle the next request')+T(675,24,'Stateful: session lives in one server','b')+E(620,40,110,36,'Customer','c')+A(675,76,675,150)+`<path d="M730 58C830 58 840 190 772 190" class="ar d" marker-end="url(#mb)"/>`+T(836,125,'same server')+T(836,141,'needed')+E(580,150,190,80,'App server|session in local memory','b')+A(675,230,675,290,'p')+E(540,290,270,70,'If this server fails|local session is lost unless replicated','p')+T(675,385,'Workable, but harder to scale and recover'),400,'Left: a load balancer sends requests to three stateless servers sharing one database. Right: one stateful server holds session data in memory, and losing it loses that session.');
+
+const d3=S(T(450,22,'Main hot path: the customer waits','b')+E(10,40,150,60,'Customer','c')+E(190,40,150,60,'Order Service','b')+E(370,40,150,60,'Payment Service','b')+E(550,40,150,60,'Order Database','b')+E(730,40,160,60,'Order confirmation','b')+A(160,70,190,70)+A(340,70,370,70)+A(520,70,550,70)+A(700,70,730,70)+T(300,165,'Background path: starts after the order is confirmed','b')+E(10,200,150,60,'Confirmed order','c')+A(160,230,200,230,'p')+E(200,200,150,60,'Message queue|durable','p')+A(350,230,390,230,'p')+E(390,200,150,60,'Background|workers','p')+A(540,230,600,205,'p')+A(540,230,600,265,'p')+A(540,230,600,325,'p')+E(600,185,280,40,'SMS notification','c')+E(600,245,280,40,'Loyalty points','c')+E(600,305,280,40,'Sales reports','c'),370,'Bold main path: customer, order service, payment service, order database, confirmation. Separate background path: confirmed order, message queue, workers, then SMS, loyalty points and reports.');
+
+const d4=S(E(20,150,130,70,'Customer|taps Place Order','c')+T(85,125,'First response lost','b')+A(150,170,300,170)+T(225,160,'Request 1')+A(150,205,300,205)+T(225,230,'Retry, same key','b')+E(300,140,180,90,'Server|checks the key first','b')+A(480,170,600,95)+E(600,60,220,70,'Order database|1 order record')+A(480,205,600,285)+E(600,250,220,70,'Payment|1 successful charge')+A(390,230,390,290,'p')+E(300,290,180,60,'Idempotency store|key, saved result','p')+A(300,262,150,262,'p')+T(225,282,'Stored result returned','b'),370,'Two requests with the same idempotency key reach the server. The server checks its stored result, creates only one order and one payment, and returns the original confirmation.');
+
+const tl=(i,t,l,b)=>{const x=i*225+10;return `<rect class="tile" x="${x}" y="10" width="205" height="270" rx="14"/>${T(x+102,42,t,'b')}${b(x)}${T(x+102,262,l)}`};
+const sumSvg=S(tl(0,'Design for Failure','Reliability',x=>`<rect class="dash" x="${x+15}" y="80" width="175" height="80" rx="12"/>`+E(x+30,95,145,50,'Payment|service','b')+T(x+102,185,'protected by timeout')+T(x+102,203,'and circuit breaker'))
++tl(1,'Stateless Servers','Scalability',x=>E(x+10,70,55,36,'A','p')+E(x+75,70,55,36,'B','p')+E(x+140,70,55,36,'C','p')+A(x+37,106,x+80,170)+A(x+102,106,x+102,170)+A(x+167,106,x+125,170)+E(x+30,170,145,44,'Shared storage'))
++tl(2,'Hot Path Decoupling','Performance',x=>E(x+10,70,185,42,'Fast checkout','b')+T(x+102,140,'then in background')+E(x+10,155,185,42,'Queue and workers','p'))
++tl(3,'Idempotency','Safe retries',x=>E(x+10,75,60,32,'Req 1','c')+E(x+10,125,60,32,'Req 2','c')+A(x+70,91,x+112,110)+A(x+70,141,x+112,122)+E(x+112,95,85,46,'One|order','b')),300,'Four tiles: protected payment service, stateless servers with shared storage, fast checkout with background queue, and two requests leading to one order.');
+
+const P=[
+{n:'01',t:'Design for Failure',s:'Expect failures. Handle them safely.',d:d1,cap:'Timeout, circuit breaker and reconciliation around a slow payment gateway.',
+e:'In real applications, every service may not work perfectly all the time. A payment service might become slow or temporarily unavailable. The application must handle this safely, without letting one failure affect the entire system.',
+sc:'A customer places an order, but the payment gateway takes too long to respond. The system does not immediately know whether the payment succeeded or failed.',
+h:['Customer places an order with the Order Service.','The Order Service calls the Payment Gateway.','The gateway is slow, so the timeout fires.','Repeated failures open the circuit breaker.','Later, reconciliation checks the actual payment status.'],
+c:[['Timeout','Limits how long the application waits for a service response.'],['Circuit Breaker','Temporarily stops repeated calls to a service that keeps failing, so it can recover.'],['Reconciliation','Checks the final payment status later to resolve uncertain outcomes.']],
+nt:['A timeout does not mean the payment failed. Show the status as uncertain until it is confirmed.'],
+k:'A reliable system does not assume everything will work. It prepares for failure.'},
+{n:'02',t:'Stateful vs. Stateless Architecture',s:'Understand where application state is stored.',d:d2,cap:'Stateless servers sharing storage, compared with a stateful server holding local session data.',
+e:'A stateless application server does not depend on session information held in its own memory between requests. It can use shared storage or an external session store. A stateful server keeps session or application state between requests.',
+sc:'A customer opens the app, checks the cart, and goes to checkout. Cart and order data must be stored reliably, and stateless servers can still read that persistent data.',
+h:['Customer sends a request.','The load balancer picks one of three servers.','The server reads and writes shared storage.','Any suitable server can handle the next request.','Adding more servers is easy: horizontal scaling.'],
+c:[['Load balancer','Spreads requests across servers.'],['Shared persistent storage','Holds customer, cart and order data.'],['Session store','External place for session data.'],['Horizontal scaling','Add servers instead of a bigger one.']],
+nt:['Stateless does not mean no data. The data lives in shared storage.','Stateful is not always bad. It needs replication or persistence to survive a server failure.'],
+k:'Separating application servers from local session state makes scaling and recovery easier.'},
+{n:'03',t:'Decoupling Hot Paths from Heavy Writes',s:'Keep the important request fast.',d:d3,cap:'A short main checkout path, with secondary work moved to a background queue.',
+e:'A hot path is the essential sequence of operations needed to complete a user request. Other suitable tasks can run separately in the background, so the main request does not wait for them.',
+sc:'At checkout the system must validate the order, handle payment and persist the order. SMS notifications, loyalty points and sales reports can run asynchronously when business rules allow.',
+h:['Customer, Order Service, Payment Service, Order Database.','Customer receives the order confirmation.','The confirmed order goes to a message queue.','Background workers send SMS, update loyalty points and build reports.'],
+c:[['Hot path','The essential steps a request needs.'],['Message queue','Holds background work until a worker takes it.'],['Background workers','Process secondary tasks.'],['Idempotent consumers','Safe if a message arrives twice.']],
+nt:['Never move payment or order correctness checks into optional background work.','Use durable queues, and handle retries safely.'],
+k:'Separate essential work from suitable background work to reduce response time.'},
+{n:'04',t:'Idempotency',s:'One logical request. One intended result.',d:d4,cap:'A retry with the same idempotency key returns the stored result and creates no second order.',
+e:'Idempotency means repeating the same logical request does not create additional unintended effects.',
+sc:'A customer clicks Place Order. The server creates the order, but the response never reaches the phone. The customer retries. Without idempotency, that can mean two orders or duplicate payments.',
+h:['First request reaches the server, which creates one order and saves the result.','A network problem loses the response.','The customer retries with the same idempotency key.','The server finds the stored result and returns it.'],
+c:[['Idempotency key','A unique ID sent with each logical request.'],['Stored request result','The saved outcome, returned on a retry.'],['Database constraints','An extra safeguard, not a replacement for correct payment and request logic.'],['Safe retry','Repeating a request is harmless.']],
+nt:[],k:'Retries are normal. Duplicate business operations should not be.'}];
+
+document.getElementById('principles').innerHTML=P.map((p,i)=>`<section class="pr" aria-labelledby="h${i}"><div class="wrap">
+<div class="ph"><span class="num">${p.n}</span><div><h2 id="h${i}">${p.t}</h2><p class="sub">${p.s}</p></div></div>
+<figure class="fig">${p.d}<figcaption>${p.cap}</figcaption></figure>
+<div class="cols"><div><h3>The idea</h3><p>${p.e}</p><p><b>Food delivery example.</b> ${p.sc}</p></div>
+<div><h3>How it works</h3><ol>${p.h.map(x=>`<li>${x}</li>`).join('')}</ol></div>
+<div><h3>Technical concepts</h3><dl>${p.c.map(x=>`<dt>${x[0]}</dt><dd>${x[1]}</dd>`).join('')}</dl>${p.nt.length?`<ul>${p.nt.map(x=>`<li>${x}</li>`).join('')}</ul>`:''}</div></div>
+<div class="take"><span>${p.k}</span><button class="btn" data-s="${i+1}">Present This Topic</button></div></div></section>`).join('');
+
+const fig=(id,svg,cap)=>document.getElementById(id).innerHTML=svg+`<figcaption>${cap}</figcaption>`;
+fig('hero-fig',hero,'A real-world approach to building reliable applications.');
+fig('sum-fig',sumSvg,'Reliability, scalability, performance and safe retries.');
+
+const chips=p=>`<ul class="chips">${p.c.map(x=>`<li>${x[0]}</li>`).join('')}</ul>`;
+const slides=[
+`<div class="sl"><h1>Four Principles of Reliable System Architecture</h1><p class="sub">Designing systems that handle failures, scale efficiently, respond faster, and prevent duplicate operations.</p><figure class="fig">${hero}<figcaption>A real-world approach to building reliable applications.</figcaption></figure></div>`,
+...P.map(p=>`<div class="sl"><h2>${p.n} · ${p.t}</h2><p class="sub">${p.s} ${p.sc}</p><figure class="fig">${p.d}<figcaption>${p.cap}</figcaption></figure><p class="tk">${p.k}</p>${chips(p)}</div>`),
+`<div class="sl"><h2>Building Systems That Can Be Trusted</h2><figure class="fig">${sumSvg}<figcaption>Handle failures, scale, respond faster, retry safely.</figcaption></figure><p class="tk">We cannot prevent every failure, but we can design our systems to handle failures safely without unnecessarily affecting customers or important business operations.</p><p class="thanks" style="margin:0">Thank you for listening. I'm happy to answer your questions.</p></div>`];
+
+const pm=document.getElementById('pm'),stage=document.getElementById('stage');let cur=0,opener=null;
+function show(i){cur=Math.max(0,Math.min(slides.length-1,i));stage.innerHTML=slides[cur];stage.querySelectorAll('.fig').forEach(f=>f.classList.add('ready'));stage.scrollTop=0;
+pb.style.width=(cur+1)/slides.length*100+'%';pc.textContent=`${cur+1} / ${slides.length}`;pv.disabled=cur===0;nx.disabled=cur===slides.length-1;pv.style.opacity=pv.disabled?.4:1;nx.style.opacity=nx.disabled?.4:1}
+function openPM(i,el){opener=el;pm.hidden=false;document.body.style.overflow='hidden';show(i);ex.focus();try{pm.requestFullscreen&&pm.requestFullscreen()}catch(e){}}
+function closePM(){pm.hidden=true;document.body.style.overflow='';if(document.fullscreenElement)document.exitFullscreen().catch(()=>{});opener&&opener.focus()}
+document.querySelectorAll('[data-s]').forEach(b=>b.addEventListener('click',()=>openPM(+b.dataset.s,b)));
+pv.onclick=()=>show(cur-1);nx.onclick=()=>show(cur+1);ex.onclick=closePM;
+document.addEventListener('keydown',e=>{if(pm.hidden)return;if(e.key==='ArrowRight'||e.key==='PageDown'){e.preventDefault();show(cur+1)}else if(e.key==='ArrowLeft'||e.key==='PageUp'){e.preventDefault();show(cur-1)}else if(e.key==='Escape')closePM()});
+requestAnimationFrame(()=>document.querySelectorAll('.fig').forEach(f=>f.classList.add('ready')));
+try{window.lucide&&lucide.createIcons()}catch(e){}
+</script>
+</body>
+</html>
